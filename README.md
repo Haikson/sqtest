@@ -2,6 +2,8 @@
 
 * clone
 * install packages from requirements.txt
+* migrate ```python manage.py migrate```
+* create superuser ```pyton manage.py createsuperuser```
 * call ```python managae.py test```
 
 ## urls
