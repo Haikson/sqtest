@@ -1,0 +1,4 @@
+social-auth-app-django
+djangorestframework
+django-mptt
+pytils
