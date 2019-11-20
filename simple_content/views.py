@@ -10,11 +10,17 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows content to be viewed or edited.
     """
+
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Content.objects.all().order_by('-ctime')
     serializer_class = ContentSerializer
 
 
 class NavigationView(views.APIView):
+
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def make_tree(self, nodes, current, ancestors_list):
         return [

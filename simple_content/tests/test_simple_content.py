@@ -17,6 +17,30 @@ class SimpleContentTestCase(TestCase):
         )
         self.user.set_password('passW0rdForUser1#')
 
+    def test_get(self):
+        factory = APIRequestFactory()
+        url = '/content_api/contents/'
+        title = 'Sample content'
+        content_text = 'Sample content text'
+        data = {
+            'title': title,
+            'content': content_text
+        }
+        request = factory.post(url, data)
+        view = ContentViewSet.as_view({'post': 'create'})
+        force_authenticate(request, user=self.user)
+        response = view(request)
+        self.assertIsNotNone(response.data.get('pk'))
+        self.assertEqual(response.data.get('slug'), slugify(title))
+        content = Content.objects.get(title=title)
+        self.assertEqual(content.content, content_text)
+
+        request = factory.get(url, data)
+        view = ContentViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 403)
+
+
     def test_post(self):
         factory = APIRequestFactory()
         url = '/content_api/contents/'
@@ -125,15 +149,18 @@ class SimpleContentTestCase(TestCase):
             'parent': parent_pk
         }
         request = factory.post(url, data)
+        force_authenticate(request, user=self.user)
         response = view(request)
         child_pk = response.data.get('pk')
         navigation_view = NavigationView.as_view()
         request = factory.get(reverse('content_api:navigation_roots'))
+        force_authenticate(request, user=self.user)
         response = navigation_view(request)
         self.assertEqual(len(response.data), 1)
         self.assertListEqual(response.data[0].get('children'), [])
 
         request = factory.get(reverse('content_api:navigation', kwargs={'current': parent_pk}))
+        force_authenticate(request, user=self.user)
         response = navigation_view(request, current=parent_pk)
         self.assertEqual(len(response.data[0].get('children')), 1)
         self.assertEqual(response.data[0].get('children')[0].get('pk'), child_pk)
