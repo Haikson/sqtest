@@ -27,6 +27,6 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('api/', include('rest_framework.urls', namespace='rest_framework')),
-    path('content_api/', include('simple_content.urls', namespace='simple_content')),
+    path('content_api/', include('simple_content.urls', namespace='content_api')),
     path('', core_views.home, name='home'),
 ]

@@ -1,6 +1,8 @@
 from django.db import models
 from mptt.models import TreeForeignKey, MPTTModel
 from pytils.translit import slugify
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 
 class Content(MPTTModel):
@@ -28,11 +30,10 @@ class Content(MPTTModel):
             url = '/{slug}/'.format(slug=self.slug)
         return url
 
-    def clean(self):
-        if not self.slug:
-            self.slug = slugify(self.title)
-
     class Meta:
         ordering = ()
 
-
+@receiver(pre_save, sender=Content)
+def content_pre_save(sender, instance, **kwargs):
+    if not instance.slug and instance._state.adding:
+            instance.slug = slugify(instance.title)
